@@ -35,7 +35,7 @@ def count():
 ######################################################################
 @app.route("/picture", methods=["GET"])
 def get_pictures():
-    pass
+    return data, 200
 
 ######################################################################
 # GET A PICTURE
@@ -44,7 +44,15 @@ def get_pictures():
 
 @app.route("/picture/<int:id>", methods=["GET"])
 def get_picture_by_id(id):
-    pass
+    url = ""
+    for pics in data:
+        if pics["id"] == id:
+            url = pics
+    
+    if url == "":
+        return {"message": "Pic not found"}, 404
+    else:
+        return url, 200
 
 
 ######################################################################
@@ -52,8 +60,14 @@ def get_picture_by_id(id):
 ######################################################################
 @app.route("/picture", methods=["POST"])
 def create_picture():
-    pass
-
+    pic = request.json
+    
+    for pics in data:
+        if pics["id"] == pic["id"]:
+            return {"Message": "picture with id {} already present".format(pic["id"])}, 302
+    
+    data.append(pic)
+    return pic, 201
 ######################################################################
 # UPDATE A PICTURE
 ######################################################################
@@ -61,11 +75,22 @@ def create_picture():
 
 @app.route("/picture/<int:id>", methods=["PUT"])
 def update_picture(id):
-    pass
+    update = request.json
+    for i in range(len(data)):
+        if data[i]["id"] == id:
+            data[i] = update
+            return data[i], 200
+    
+    return {"message": "picture not found"}, 404
 
 ######################################################################
 # DELETE A PICTURE
 ######################################################################
 @app.route("/picture/<int:id>", methods=["DELETE"])
 def delete_picture(id):
-    pass
+    for i in range(len(data)):
+        if data[i]["id"] == id:
+            del(data[i])
+            return "", 204
+    
+    return {"message": "picture not found"}, 404
